@@ -218,4 +218,38 @@ class User {
       return null;
     }
   }
+
+  // favorites a story for a logged-in user 
+  // takes 2 params as arguments (username and storyId) and requires loginToken to make request
+
+  async favoriteStory(token, story) {
+    this.favorites.push(story)
+
+    const response = await axios({
+      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      method: "POST",
+      data: {token}
+    });
+    
+    console.log(response)
+
+  }
+
+  async removeFavoriteStory(token, story) {
+    this.favorites.push(story)
+
+    const response = await axios({
+      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      method: "DELETE",
+      data: {token}
+    });
+    
+    console.log(response)
+
+  }
+
+  // func that takes a story as arg and checks to see if its favorited
+  isFavorite(story) {
+    return this.favorites.includes(story)
+  }
 }
