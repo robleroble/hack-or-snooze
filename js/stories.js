@@ -29,8 +29,6 @@ async function getAndShowStoriesOnStart() {
 
   return $(`
       <li id="${story.storyId}">
-        ${showDeleteBtn ? getDeleteBtnHTML() : ""}
-        ${showStar ? getStarHTML(story, currentUser) : ""}
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
         </a>
@@ -39,26 +37,6 @@ async function getAndShowStoriesOnStart() {
         <small class="story-user">posted by ${story.username}</small>
       </li>
     `);
-}
-
-/** Make delete button HTML for story */
-
-function getDeleteBtnHTML() {
-  return `
-      <span class="trash-can">
-        <i class="fas fa-trash-alt"></i>
-      </span>`;
-}
-
-/** Make favorite/not-favorite star for story */
-
-function getStarHTML(story, user) {
-  const isFavorite = user.isFavorite(story);
-  const starType = isFavorite ? "fas" : "far";
-  return `
-      <span class="star">
-        <i class="${starType} fa-star"></i>
-      </span>`;
 }
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
@@ -101,3 +79,5 @@ async function submitStoryFromForm(evt) {
 }
 
 $submitStoryForm.on("submit", submitStoryFromForm)
+
+
