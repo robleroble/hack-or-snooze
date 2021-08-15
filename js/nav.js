@@ -9,7 +9,7 @@
 function navAllStories(evt) {
   console.debug("navAllStories", evt);
   hidePageComponents();
-  putStoriesOnPage();
+  putStoriesOnPage("all");
 }
 
 $body.on("click", "#nav-all", navAllStories);
@@ -39,10 +39,20 @@ function updateNavOnLogin() {
 //** When logged-in user clicks submit, submitform appears */
 
 function navSubmitClick(evt) {
-  console.debug("navSubmitClick")
+  console.debug("navSubmitClick");
   hidePageComponents();
   $submitStoryForm.show();
-  putStoriesOnPage()
+  putStoriesOnPage("all");
 }
 
-$navSubmit.on("click", navSubmitClick)
+$navSubmit.on("click", navSubmitClick);
+
+// When logged-in user clicks favorites, favorited stories populate
+
+function navFavoritesClick(evt) {
+  console.debug("navFavoritesClick");
+  hidePageComponents();
+  putStoriesOnPage("favorites");
+}
+
+$navFavorites.on("click", navFavoritesClick);

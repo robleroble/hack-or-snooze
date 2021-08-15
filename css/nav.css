@@ -32,3 +32,7 @@ nav {
   font-size: 0.85rem;
   padding: 0;
 }
+
+#nav-all {
+  margin-right: 10px;
+}
