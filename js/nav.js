@@ -34,6 +34,8 @@ function updateNavOnLogin() {
   $navLogOut.show();
   $navSubmit.show();
   $navUserProfile.text(`${currentUser.username}`).show();
+  $loginForm.hide();
+  $signupForm.hide();
 }
 
 //** When logged-in user clicks submit, submitform appears */
@@ -56,3 +58,13 @@ function navFavoritesClick(evt) {
 }
 
 $navFavorites.on("click", navFavoritesClick);
+
+// When logged-in user clicks My Stories, user-created stories populate
+
+function navMyStoriesClick(evt) {
+  console.debug("navMyStoriesClick");
+  hidePageComponents();
+  putStoriesOnPage("userStories");
+}
+
+$navMyStories.on("click", navMyStoriesClick);

@@ -76,7 +76,6 @@ class StoryList {
    */
 
   async addStory(user, story) {
-    // UNIMPLEMENTED: complete this function!
     const response = await axios({
       url: `${BASE_URL}/stories`,
       method: "POST",
@@ -101,6 +100,19 @@ class StoryList {
       url: newStory.url,
       username: newStory.username,
     });
+  }
+
+  // Deletes a story (only if user owns it)
+
+  async deleteStory(user, story) {
+    const response = await axios({
+      url: `${BASE_URL}/stories/${story.storyId}`,
+      method: "DELETE",
+      data: {
+        token: user.loginToken,
+      },
+    });
+    console.log(response);
   }
 }
 

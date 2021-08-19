@@ -19,7 +19,7 @@ async function getAndShowStoriesOnStart() {
  * Returns the markup for the story.
  */
 
-function generateStoryMarkup(story) {
+function generateStoryMarkup(story, trashOn) {
   // console.debug("generateStoryMarkup", story);
 
   const hostName = story.getHostName();
@@ -29,6 +29,7 @@ function generateStoryMarkup(story) {
 
   return $(`
       <li id="${story.storyId}">
+        ${trashOn === "trashOn" ? makeTrashHtml(story, currentUser) : ""}
         ${showStar ? makeStarHtml(story, currentUser) : ""}
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
@@ -56,17 +57,34 @@ function makeStarHtml(story, user) {
   }
 }
 
+// function that generates trash icon for user's stories
+function makeTrashHtml(story, user) {
+  if (user.ownStories.some((s) => s.storyId === story.storyId) === true) {
+    return `
+    <span class="trash">
+      <i class="fas fa-trash-alt"></i>
+    </span>
+    `;
+  } else {
+    return ``;
+  }
+}
+
 /** Gets list of stories from server, generates their HTML, and puts on page. */
 
 function putStoriesOnPage(stories) {
   console.debug("putStoriesOnPage");
 
   let storiesType;
+  let trashOn = "trashOff";
 
   if (stories === "all") {
     storiesType = storyList.stories;
   } else if (stories === "favorites") {
     storiesType = currentUser.favorites;
+  } else if (stories === "userStories") {
+    storiesType = currentUser.ownStories;
+    trashOn = "trashOn";
   }
 
   $allStoriesList.empty();
@@ -74,7 +92,7 @@ function putStoriesOnPage(stories) {
   // loop through all of our stories and generate HTML for them
 
   for (let story of storiesType) {
-    const $story = generateStoryMarkup(story);
+    const $story = generateStoryMarkup(story, trashOn);
     $allStoriesList.append($story);
   }
   // for (let story of currentUser.favorites) {
