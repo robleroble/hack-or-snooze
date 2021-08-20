@@ -23,10 +23,6 @@ class Story {
   /** Parses hostname out of URL and returns it. */
 
   getHostName() {
-    // find first '/' in URL
-    let firstSlashIdx = this.url.indexOf("//");
-    let hostName = this.url.slice(firstSlashIdx + 1);
-
     // saw in Springboard solution that there is a simple URL.host method (doesn't work in IE though)
     return new URL(this.url).host;
   }
@@ -88,11 +84,12 @@ class StoryList {
         },
       },
     });
-    // console.log(response)
+
+    // story response in a variable
     let newStory = response.data.story;
-    // console.log(newStory.author)
-    // return the new story
-    return new Story({
+
+    // take data from response and use it to create new instance of Story class
+    const createdStory = new Story({
       author: newStory.author,
       createdAt: newStory.createdAt,
       storyId: newStory.storyId,
@@ -100,11 +97,15 @@ class StoryList {
       url: newStory.url,
       username: newStory.username,
     });
+
+    // when story is added, we push it to that user's ownStories
+    user.ownStories.push(createdStory);
   }
 
-  // Deletes a story (only if user owns it)
+  // Deletes a story
 
   async deleteStory(user, story) {
+    // deletes story from DB
     const response = await axios({
       url: `${BASE_URL}/stories/${story.storyId}`,
       method: "DELETE",
@@ -112,7 +113,14 @@ class StoryList {
         token: user.loginToken,
       },
     });
-    console.log(response);
+
+    // removes story from ownStories list
+    user.ownStories = user.ownStories.filter(
+      (s) => s.storyId !== story.storyId
+    );
+
+    // removes story from allStories list
+    this.stories = this.stories.filter((s) => s.storyId !== story.storyId);
   }
 }
 
@@ -231,7 +239,7 @@ class User {
   // takes 2 params as arguments (username and storyId) and requires loginToken to make request
 
   async addFavorite(username, storyId, story) {
-    this.favorites.push(story);
+    // add favorite to currentUser in DB
     const response = await axios({
       url: `${BASE_URL}/users/${username}/favorites/${storyId}`,
       method: "POST",
@@ -239,11 +247,13 @@ class User {
         token: this.loginToken,
       },
     });
-    console.log(response);
+
+    // add favorited story to user's favorites
+    this.favorites.push(story);
   }
 
   async removeFavorite(username, storyId, story) {
-    this.favorites = this.favorites.filter((s) => s.storyId !== story.storyId);
+    // remove favorite from currentUser in DB
     const response = await axios({
       url: `${BASE_URL}/users/${username}/favorites/${storyId}`,
       method: "DELETE",
@@ -251,7 +261,9 @@ class User {
         token: this.loginToken,
       },
     });
-    console.log(response);
+
+    // remove favorited story from user's favorites
+    this.favorites = this.favorites.filter((s) => s.storyId !== story.storyId);
   }
 
   // checks to see if a story is favorited by a user

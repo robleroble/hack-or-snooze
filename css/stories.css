@@ -16,7 +16,6 @@
   margin: 20px 30px;
 }
 
-
 /* Individual stories */
 
 .story-link {
@@ -40,4 +39,18 @@
 
 .star {
   cursor: pointer;
+}
+
+/* hover styling on favorite and trash icons */
+
+i:hover {
+  cursor: pointer;
+}
+
+.fa-star:hover {
+  color: gold;
+}
+
+.fa-trash-alt:hover {
+  color: red;
 }

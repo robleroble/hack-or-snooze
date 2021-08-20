@@ -77,27 +77,31 @@ function putStoriesOnPage(stories) {
 
   let storiesType;
   let trashOn = "trashOff";
+  let noFavsOrStoriesText;
 
   if (stories === "all") {
     storiesType = storyList.stories;
   } else if (stories === "favorites") {
     storiesType = currentUser.favorites;
+    noFavsOrStoriesText = `<p>You have not favorited any stories!</p>`;
   } else if (stories === "userStories") {
     storiesType = currentUser.ownStories;
     trashOn = "trashOn";
+    noFavsOrStoriesText = `<p>You have not submitted any stories!</p>`;
   }
 
   $allStoriesList.empty();
 
-  // loop through all of our stories and generate HTML for them
+  // if user has no favorites or submitted stories, generate placeholder text to append to $allStoriesList
+  if (storiesType.length === 0) {
+    $allStoriesList.append(noFavsOrStoriesText);
+  }
 
+  // loop through all of our stories and generate HTML for them
   for (let story of storiesType) {
     const $story = generateStoryMarkup(story, trashOn);
     $allStoriesList.append($story);
   }
-  // for (let story of currentUser.favorites) {
-  //   const $story = generateStoryMarkup(story);
-  //   $allStoriesList.append($story);
 
   $allStoriesList.show();
 }
@@ -117,12 +121,12 @@ async function submitStoryFromForm(evt) {
   // call addStory() from models.js
   const addedStory = await storyList.addStory(currentUser, story);
 
-  // const addedStoryMarkup = generateStoryMarkup(addedStory);
-  // $allStoriesList.prepend(addedStoryMarkup)
+  // once story is added thru DB, we can re-call getStories to generate stories again, this time with the newly added story
   storyList = await StoryList.getStories();
   putStoriesOnPage("all");
 
   $submitStoryForm.trigger("reset");
+  $submitStoryForm.hide();
 }
 
 $submitStoryForm.on("submit", submitStoryFromForm);
@@ -132,10 +136,11 @@ async function favoriteStory(evt) {
   console.debug("favoriteStory");
 
   if (currentUser) {
+    // use event to identify storyId and retrieve story instance for API call
     const storyId = evt.target.parentElement.parentElement.id;
-    console.log(evt.target.outerHTML);
     const story = storyList.stories.find((s) => s.storyId === storyId);
 
+    // if story has been favorited (check star CSS fill) clicking star with favorite or unfavorite story
     if (evt.target.outerHTML === `<i class="far fa-star"></i>`) {
       evt.target.outerHTML = `<i class="fas fa-star"></i>`;
       await currentUser.addFavorite(currentUser.username, storyId, story);
@@ -147,3 +152,19 @@ async function favoriteStory(evt) {
 }
 
 $allStoriesList.on("click", ".favorite", favoriteStory);
+
+// delete a story when user clicks on trashcan
+async function deleteStory(evt) {
+  console.debug("deleteStory");
+  if (evt.target.outerHTML === `<i class="fas fa-trash-alt"></i>`) {
+    // retrieve ID for story to be deleted
+    const storyId = evt.target.parentElement.parentElement.id;
+    // user storyId to find story object
+    const story = storyList.stories.find((s) => s.storyId === storyId);
+    await storyList.deleteStory(currentUser, story);
+    // once deleted, user-submitted stories will be updated (deleted story will be gone)
+    putStoriesOnPage("userStories");
+  }
+}
+
+$allStoriesList.on("click", ".trash", deleteStory);
