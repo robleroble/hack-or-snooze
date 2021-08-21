@@ -60,6 +60,7 @@ function logout(evt) {
   console.debug("logout", evt);
   localStorage.clear();
   location.reload();
+  $loggedInNav.hide();
 }
 
 $navLogOut.on("click", logout);
@@ -111,7 +112,7 @@ function updateUIOnUserLogin() {
   console.debug("updateUIOnUserLogin");
   hidePageComponents();
 
-  putStoriesOnPage();
+  putStoriesOnPage("all");
   $allStoriesList.show();
 
   updateNavOnLogin();
